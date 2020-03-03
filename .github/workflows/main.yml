@@ -1,0 +1,31 @@
+name: Koha Packages Docker
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        koha_version: [19.05, 19.11]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Publish to Quay.io
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: bywatersolutions/koha-package-docker
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+          registry: quay.io
+          snapshot: true
+          buildoptions: "--build-arg KOHA_VERSION=${{ matrix.koha_version }}"
+          tags: "${{ matrix.koha_version }}-latest,${{ matrix.koha_version }}-${{ github.run_number }}"
