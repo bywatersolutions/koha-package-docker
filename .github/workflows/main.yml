@@ -16,10 +16,16 @@ jobs:
     strategy:
       matrix:
         koha_version: [19.05, 19.11]
-        debian_version: [stretch-slim, buster-slim]
+        base_image: ['debian:stretch-slim', 'debian:buster-slim', 'bitnami/minideb:stretch', 'bitnami/minideb:buster']
 
     steps:
       - uses: actions/checkout@v1
+      - name: Export additional variables needed by koha-testing-docker
+        id: VARS
+        run: |
+            TMP1=${{ matrix.base_image }} && TMP2=${TMP1/:/-} && TMP3=${TMP2/\//-} && echo $TMP3
+            echo ::set-output name=DOCKER_IMAGE_TAG::$TMP3
+
       - name: Publish to Quay.io
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -27,5 +33,5 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
           registry: quay.io
-          buildoptions: "--build-arg KOHA_VERSION=${{ matrix.koha_version }} --build-arg BASE_TAG=${{ matrix.debian_version }}"
-          tags: "${{ matrix.koha_version }}-${{ matrix.debian_version }},${{ matrix.koha_version }}-${{ matrix.debian_version }}-${{ github.run_number }}"
+          buildoptions: "--build-arg KOHA_VERSION=${{ matrix.koha_version }} --build-arg BASE_IMAGE=${{ matrix.base_image }}"
+          tags: "${{ matrix.koha_version }}-${{ steps.VARS.outputs.DOCKER_IMAGE_TAG }},${{ matrix.koha_version }}-${{ steps.VARS.outputs.DOCKER_IMAGE_TAG }}-${{ github.run_number }}"
