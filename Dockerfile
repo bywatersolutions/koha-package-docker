@@ -1,8 +1,9 @@
-FROM debian:stretch-slim
+ARG BASE_TAG=stretch-slim
+ARG KOHA_VERSION=19.05
+
+FROM debian:${BASE_TAG}
 
 LABEL maintainer="Kyle M Hall <kyle@bywatersolutions.com>"
-
-ARG KOHA_VERSION=19.05
 
 RUN echo "deb http://debian.koha-community.org/koha $KOHA_VERSION main" | tee /etc/apt/sources.list.d/koha.list
 

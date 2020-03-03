@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         koha_version: [19.05, 19.11]
+        debian_version: [stretch-slim, buster-slim]
 
     steps:
       - uses: actions/checkout@v1
@@ -26,6 +27,5 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
           registry: quay.io
-          snapshot: true
-          buildoptions: "--build-arg KOHA_VERSION=${{ matrix.koha_version }}"
-          tags: "${{ matrix.koha_version }}-latest,${{ matrix.koha_version }}-${{ github.run_number }}"
+          buildoptions: "--build-arg KOHA_VERSION=${{ matrix.koha_version }} --build-arg BASE_TAG=${{ matrix.debian_version }}"
+          tags: "${{ matrix.koha_version }}-${{ matrix.debian_version }},${{ matrix.koha_version }}-${{ matrix.debian_version }}-${{ github.run_number }}"
