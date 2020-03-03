@@ -14,6 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         koha_version: [19.05, 19.11]
         base_image: ['debian:stretch-slim', 'debian:buster-slim', 'bitnami/minideb:stretch', 'bitnami/minideb:buster']
